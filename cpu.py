@@ -65,7 +65,8 @@ def ws(dat, addr):
 
 def r32(addr):
     addr -= 0x80000000
-    assert addr >= 0 and addr < len(memory)
+    if addr < 0 and addr >= len(memory):
+        raise Exception("read out of memory")
     # little endian
     return struct.unpack("<I", memory[addr:addr+4])[0]
 
@@ -79,6 +80,11 @@ def dump():
     pp += "\n PC: %08x" % regfile[PC]
     print(''.join(pp))
 
+def sign_extend(x, l):
+    if x >> (l - 1) == 1:
+        return (1 << l) - x
+    else:
+        return x
 
 def step():
     ins = r32(regfile[PC])
@@ -87,20 +93,24 @@ def step():
     if opcode == Ops.JAL:
         # J type instruction
         rd = getBits(ins, 11, 7)
-        offset = getBits(ins, 31, 31) << 20 | getBits(ins, 30, 21) << 1 | getBits(ins, 21, 20) << 11 | getBits(ins, 19, 12) << 12
+        offset = (getBits(ins, 32, 31) << 20) | (getBits(ins, 30, 21) << 1) | (getBits(ins, 21, 20) << 11) | (getBits(ins, 19, 12) << 12)
+        regfile[PC] = regfile[PC] + 4
         regfile[PC] += offset
         return True
     elif opcode == Ops.JALR:
         rd = getBits(ins, 11, 7)
         rs1 = getBits(ins, 19, 15)
-        imm = getBits(ins, 31,20)
-        pass
+        imm = sign_extend(getBits(ins, 31,20), 12)
+        regfile[rd] = regfile[PC] + 4
+        regfile[PC] += regfile[rs1] + imm 
+        return True
     elif opcode == Ops.AUIPC:
         # U type instruction
         rd = getBits(ins, 11, 7)
         imm = getBits(ins, 31, 20)
         regfile[PC] = regfile[PC] + imm
     elif opcode == Ops.OP:
+        # R type instruction
         rd = getBits(ins, 11, 7)
         rs1 = getBits(ins, 19, 15)
         rs2 = getBits(ins, 24, 20)
@@ -128,8 +138,8 @@ def step():
     elif opcode == Ops.SYSTEM:
         pass
     else:
-        raise Exception("write op %r" % opcode)
         dump()
+        raise Exception("write op %r" % opcode)
 
     regfile[PC] += 4
     return True
