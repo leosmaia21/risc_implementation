@@ -49,14 +49,13 @@ def dump():
     pp += "\n PC: %08x" % regfile[PC]
     print('Registers')
     print(''.join(pp))
-    print('Code Memory')
+    print('data Memory')
     pp = []
-    for i in range(0, len(codeMemory), 2):
+    for i in range(0, len(dataMemory), 2):
         if i != 0 and i % 8 == 0:
             pp += "\n"
-        pp += " %04x" % int.from_bytes(codeMemory[i:i+2], byteorder='big')
+        pp += " %3s: %04x" % ("x%d" % i, int.from_bytes(dataMemory[i: i + 2], byteorder= 'big'))
     print(''.join(pp))
-    # print(dataMemory)
 
 def rs(addr):
     ret = codeMemory[addr:addr+2]
@@ -73,50 +72,34 @@ def instruction():
     ws  = ins >> 3 & 0x07
     offset = ins & 0x3F
     if op == Ops.LW.value:
-        # print("LW")
         regfile[ws] = dataMemory[regfile[rs1] + offset: regfile[rs1] + offset + 2]
         regfile[ws] = int.from_bytes(regfile[ws], byteorder='big')
-        print(regfile[ws])
     elif op == Ops.SW.value:
-        #print("SW")
         dest = regfile[rs1] + offset
         wordstore("data", regfile[rs2], dest)
     elif op == Ops.ADD.value:
-        #print("ADD")
         regfile[ws] = regfile[rs1] + regfile[rs2]
     elif op == Ops.SUB.value:
-        #print("SUB")
         regfile[ws] = regfile[rs1] - regfile[rs2]
     elif op == Ops.INV.value:
-        #print("INV")
         regfile[ws] = ~regfile[rs1]
     elif op == Ops.LSL.value:
-        #print("LSL")
         regfile[ws] = regfile[rs1] << regfile[rs2]
     elif op == Ops.LSR.value:
-        #print("LSR")
         regfile[ws] = regfile[rs1] >> regfile[rs2]
     elif op == Ops.AND.value:
-        #print("AND")
         regfile[ws] = regfile[rs1] & regfile[rs2]
     elif op == Ops.OR.value:
-        #print("OR")
         regfile[ws] = regfile[rs1] | regfile[rs2]
     elif op == Ops.SLT.value:
-        #print("SLT")
         regfile[ws] = 1 if regfile[rs1] < regfile[rs2] else 0
     elif op == Ops.BEQ.value:
-        #print("BEQ")
         if regfile[rs1] == regfile[rs2]:
             regfile[PC] += 2 + ((ins & 0x3F) << 1)
-        # return True
     elif op == Ops.BNE.value:
-        # print("BNE")
         if regfile[rs1] != regfile[rs2]:
             regfile[PC] += 2 + ((ins & 0x3F) << 1)
     elif op == Ops.J.value:
-        # print("J")
-        return False
         regfile[PC] = (ins & 0x0C) << 1
     else:
         raise Exception("Unknown instruction")
