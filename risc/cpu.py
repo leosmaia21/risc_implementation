@@ -1,6 +1,10 @@
-import struct
-from enum import Enum
+#mini implemetation of a 16 bit risc cpu, with 32 16 bit registers
+#hardcoded to use 0x20 bytes of code memory and 0x20 bytes of data memory
+#harvard architecture
+#code memory is loaded from codeinstructions
+#data memory is loaded from datamemory
 
+from enum import Enum
 
 codeMemory = b'\x00'*0x20
 dataMemory = b'\x00'*0x20
@@ -52,7 +56,7 @@ def instruction():
     ins = rs(regfile[PC])
     if ins == 0:
         print("halt")
-        exit(0)
+        return False
     op = ins >> 12
     rs1 = ins >> 9 & 0x07
     rs2 = ins >> 6 & 0x07
@@ -99,13 +103,11 @@ def instruction():
         print("BNE")
         if regfile[rs1] != regfile[rs2]:
             regfile[PC] += 2 + ((ins & 0x3F) << 1)
-        # return True
     elif op == Ops.J.value:
         print("J")
-        regfile[PC] = (ins & 0x3F) << 1
-        # return True
-
-
+        regfile[PC] = (ins & 0x0C) << 1
+    else:
+        raise Exception("Unknown instruction")
     regfile[PC] += 2
     return True
 
