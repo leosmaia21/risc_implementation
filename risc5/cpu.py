@@ -68,7 +68,7 @@ def r32(addr):
     if addr < 0 and addr >= len(memory):
         raise Exception("read out of memory")
     # little endian
-    return struct.unpack("<I", memory[addr:addr+4])[0]
+    return struct.unpack("<I", memory[addr:addr+2])[0]
 
 
 def dump():
