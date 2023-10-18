@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 #mini implemetation of a 16 bit risc cpu, with 32 16 bit registers
 #hardcoded to use 0x20 bytes of code memory and 0x20 bytes of data memory
 #harvard architecture
