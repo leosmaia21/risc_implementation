@@ -1,3 +1,4 @@
+`include "registers.v"
 
 module Instruction_memory( input[15:0] pc, output[15:0] instruction);
 
