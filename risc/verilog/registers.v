@@ -6,7 +6,9 @@ module registers (
 	input [15:0] reg_write_data,
 
 	input[3:0] reg_read_addr,
-	output [15:0] reg_read_data
+	output [15:0] reg_read_data,
+	input[3:0] reg_read_addr2,
+	output [15:0] reg_read_data2
 );
 
 reg [15:0] reg_array[15:0];
@@ -18,13 +20,13 @@ initial begin
 end
 
 always @(posedge clk) begin
-
 	if (reg_write_e) begin
 		reg_array[reg_write_dest] <= reg_write_data;
 	end
 
 end
 
+assign reg_read_data2 = reg_array[reg_read_addr2];
 assign reg_read_data = reg_array[reg_read_addr];
 
 endmodule

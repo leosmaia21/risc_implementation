@@ -13,7 +13,7 @@ assign instruction = memory[pc[3:0]];
 endmodule
 
 
-module TopModule;
+module risc16;
 // Declare signals for inputs and outputs
 reg [15:0] pc;
 wire [15:0] instruction;
@@ -34,7 +34,7 @@ end
 always #5 clk = !clk;
 
 always @(posedge clk) begin
-	if (pc <= 3) 
+	if (pc == 3) 
 		$display("Read instruction from address %h: %h", pc, instruction);
 	pc = pc + 1;
 	count = count + 1;
