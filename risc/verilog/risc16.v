@@ -31,13 +31,13 @@ initial begin
 	count = 0;
 end
 
-always #5 clk = !clk;
+always #5 clk = ~clk;
 
 always @(posedge clk) begin
 	if (pc == 3) 
 		$display("Read instruction from address %h: %h", pc, instruction);
-	pc = pc + 1;
-	count = count + 1;
+	pc <= pc + 2;
+	count <= count + 1;
 
 end
 initial begin
