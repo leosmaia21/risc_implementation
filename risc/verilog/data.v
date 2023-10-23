@@ -15,7 +15,7 @@ end
 
 always @(posedge clk) begin
 	if (mem_write)
-		memory[mem_addr] <= mem_read_data;
+		memory[mem_addr] <= mem_write_data;
 
 end
 

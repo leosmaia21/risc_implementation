@@ -13,6 +13,8 @@ codeMemory = b'\x00'*0x20
 dataMemory = b'\x00'*0x20
 
 regfile = [0]*33
+
+# PC is the register number 32
 PC = 32
 
 
